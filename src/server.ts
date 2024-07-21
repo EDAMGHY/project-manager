@@ -1,3 +1,6 @@
+import "dotenv/config";
+import "express-async-errors";
+
 import express, { Request, Response, Application } from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -5,12 +8,23 @@ import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import colors from "colors";
-import "dotenv/config";
 
 import { connectDB } from "@/config";
 import { env } from "@/config";
-import { errorHandlerMiddleware, notFoundMiddleware } from "@/middleware";
+import {
+  errorHandlerMiddleware,
+  getPermissions,
+  notFoundMiddleware,
+} from "@/middleware";
 import { responseObject } from "@/lib";
+import {
+  userRoutes,
+  roleRoutes,
+  permissionRoutes,
+  projectRoutes,
+  taskRoutes,
+  authRoutes,
+} from "@/routes";
 
 const app: Application = express();
 
@@ -34,6 +48,16 @@ app.use(cookieParser(env.JWT_SECRET));
 app.get("/", (req: Request, res: Response) => {
   res.json(responseObject("Entry Point The API is Running..."));
 });
+
+// DYNAMICALLY ADDING PERMISSIONS
+app.use("/api/v1/*", getPermissions);
+
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/roles", roleRoutes);
+app.use("/api/v1/permissions", permissionRoutes);
+app.use("/api/v1/projects", projectRoutes);
+app.use("/api/v1/tasks", taskRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

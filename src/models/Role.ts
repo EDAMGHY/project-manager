@@ -6,6 +6,7 @@ const roleSchema = new Schema(
     name: {
       type: String,
       required: [true, "Please provide a role name"],
+      unique: true,
     },
     description: {
       type: String,

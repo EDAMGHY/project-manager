@@ -1,11 +1,18 @@
 // import { Request, Response, NextFunction } from "express";
 import { responseObject } from "@/lib";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
 // export default (err, req: Request, res: Response, next: NextFunction) => {
-export const errorHandlerMiddleware = (err, req: Request, res: Response) => {
-  console.log(`errerrerrerr : ${err}`.bgRed);
+export const errorHandlerMiddleware = (
+  // eslint-disable-next-line
+  err: any,
+  req: Request,
+  res: Response,
+  // eslint-disable-next-line
+  next: NextFunction,
+) => {
+  console.log(`[${err?.name}]:${err?.toString?.()}`.bgRed);
 
   const customError = {
     // set default
@@ -34,5 +41,5 @@ export const errorHandlerMiddleware = (err, req: Request, res: Response) => {
 
   return res
     .status(customError.statusCode)
-    .json(responseObject(customError.msg, false));
+    .json(responseObject(customError.msg, null, false));
 };

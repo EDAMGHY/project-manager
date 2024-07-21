@@ -30,11 +30,6 @@ const taskSchema = new Schema(
       ref: "Project",
       required: [true, "Please provide a project id"],
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "Please provide a user id"],
-    },
   } as SchemaDefinition,
   { timestamps: true } as SchemaOptions,
 );
