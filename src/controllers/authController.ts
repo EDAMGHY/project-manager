@@ -41,7 +41,7 @@ export const register = async (req: Request, res: Response) => {
 
   res
     .status(StatusCodes.CREATED)
-    .json(responseObject("User Created Successfully", { user: tokenUser }));
+    .json(responseObject("User Registered Successfully", { user: tokenUser }));
 };
 
 /**
@@ -81,7 +81,9 @@ export const login = async (req: Request, res: Response) => {
 
   res
     .status(StatusCodes.OK)
-    .json(responseObject("login a User", { user: tokenUser }));
+    .json(
+      responseObject("User logged in Successfully...", { user: tokenUser }),
+    );
 };
 
 /**
@@ -99,5 +101,7 @@ export const logout = async (req: Request, res: Response) => {
     expires: new Date(Date.now() + 1000),
   });
 
-  res.status(StatusCodes.OK).json(responseObject("logout a User "));
+  res
+    .status(StatusCodes.OK)
+    .json(responseObject("User logged out Successfully..."));
 };

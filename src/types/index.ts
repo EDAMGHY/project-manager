@@ -34,10 +34,12 @@ export interface Request extends RequestExpress {
 }
 
 export interface IFilterExpress {
-  [key: string]:
+  [key: string | number]:
     | {
-        $regex: string;
-        $options: string;
+        $regex?: string;
+        $lte?: Date | string;
+        $gte?: Date | string;
+        $options?: string;
       }
     | string
     | number;

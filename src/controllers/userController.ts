@@ -26,11 +26,19 @@ export const getUsers = async (req: Request, res: Response) => {
   if (email) filters.push({ email: { $regex: `.*${email}.*`, $options: "i" } });
   if (role) filters.push({ role: role as string });
 
+  //handle Error if no filters are provided
+  // "message": "$and/$or/$nor must be a nonempty array",
+
+  let obj = {};
+  if (filters.length > 0) {
+    obj = { $and: filters };
+  }
+
   // Sorting setup
   let sorting: string = "createdAt";
   if (sort) sorting = sort.toString();
 
-  const users = await User.find({ $and: filters })
+  const users = await User.find(obj)
     .populate("role")
     .select("-password")
     .sort(sorting);
