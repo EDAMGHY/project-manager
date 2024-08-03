@@ -5,17 +5,20 @@ import {
   getTask,
   getTasks,
 } from "@/controllers";
-import { authenticate } from "@/middleware";
+import { authenticate, checkPermissions } from "@/middleware";
 import { Router } from "express";
 
 const router = Router();
 
-router.route("/").post(authenticate, createTask).get(authenticate, getTasks);
+router
+  .route("/")
+  .post(authenticate, checkPermissions(), createTask)
+  .get(authenticate, checkPermissions(), getTasks);
 
-router.get("/:id", authenticate, getTask);
+router.get("/:id", authenticate, checkPermissions(), getTask);
 
-router.put("/:id", authenticate, editTask);
+router.put("/:id", authenticate, checkPermissions(), editTask);
 
-router.delete("/:id", authenticate, deleteTask);
+router.delete("/:id", authenticate, checkPermissions(), deleteTask);
 
 export default router;

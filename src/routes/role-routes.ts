@@ -12,13 +12,13 @@ const router = Router();
 
 router
   .route("/")
-  .post(authenticate, checkPermissions, createRole)
-  .get(authenticate, checkPermissions, getRoles);
+  .post(authenticate, checkPermissions(), createRole)
+  .get(authenticate, checkPermissions(), getRoles);
 
-router.get("/:id", authenticate, checkPermissions, getRole);
+router.get("/:id", authenticate, checkPermissions(), getRole);
 
-router.put("/:id", authenticate, checkPermissions, editRole);
+router.put("/:id", authenticate, checkPermissions(), editRole);
 
-router.delete("/:id", authenticate, checkPermissions, deleteRole);
+router.delete("/:id", authenticate, checkPermissions(), deleteRole);
 
 export default router;

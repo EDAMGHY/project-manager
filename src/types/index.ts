@@ -44,3 +44,29 @@ export interface IFilterExpress {
     | string
     | number;
 }
+export interface ISortExpress {
+  [key: string]: "asc" | "desc";
+}
+
+export interface IRolesAndPermissions {
+  name: string;
+  description: string;
+  permissions: string[];
+}
+
+/**
+ * @interface IUser
+ * @description User Interface
+ * @param {string} name - User's name
+ * @param {string} username - User's username
+ * @param {string} email - User's email
+ * @param {string} password - User's password
+ * @param {string} role - User's role
+ */
+export interface IUser {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  role?: string;
+}

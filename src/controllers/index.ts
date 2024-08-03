@@ -4,3 +4,4 @@ export * from "./projectController";
 export * from "./userController";
 export * from "./authController";
 export * from "./taskController";
+export * from "./logController";

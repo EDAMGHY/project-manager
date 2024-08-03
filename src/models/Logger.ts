@@ -36,17 +36,13 @@ const loggerSchema = new Schema(
       type: Number,
       required: [false, "Response time is optional"],
     },
-    errorDetails: {
+    stack: {
       type: String,
-      required: [false, "Error details are optional"],
+      required: [false, "Stack are optional"],
     },
     userAgent: {
       type: String,
       required: [false, "User agent is optional"],
-    },
-    payload: {
-      type: Schema.Types.Mixed, // Use Mixed type for flexibility, but be cautious with sensitive data
-      required: [false, "Payload is optional"],
     },
     user: {
       type: Schema.Types.ObjectId,

@@ -1,4 +1,4 @@
-import { responseObject } from "@/lib";
+import { getRoleName, responseObject } from "@/lib";
 import * as CustomError from "@/errors";
 import { Response } from "express";
 import { Request } from "@/types";
@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
 
   // first registered user is an admin
   const role = await Role.findOne({
-    name: username === "edamghy" ? "OWNER" : "USER",
+    name: getRoleName(username),
   });
 
   const user = await User.create({

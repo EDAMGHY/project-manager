@@ -1,37 +1,43 @@
-import { Request, Response, NextFunction } from "express";
-import { Logger } from "@/models"; // Adjust the import path as necessary
+import { Response, NextFunction } from "express";
+import { Request } from "@/types"; // Adjust the import path as necessary
+import { Logger, Role } from "@/models"; // Adjust the import path as necessary
 
-export function logRequest(
-  req: Request & { user?: { _id: string; role: string } },
+export async function logErrors(
+  //eslint-disable-next-line
+  err: any,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const start = process.hrtime();
+  if (!req?.user) {
+    return next(err);
+  }
 
-  res.on("finish", async () => {
-    const [seconds, nanoseconds] = process.hrtime(start);
-    const responseTime = seconds * 1000 + nanoseconds / 1e6; // Convert to milliseconds
+  const roleId = req?.user?.role;
+  const role = await Role.findById(roleId);
 
-    const logEntry = new Logger({
-      action: "Request", // Customize this as needed
-      description: `${req.method} ${req.path}`, // Example description
-      user: req?.user?._id, // Assuming you have user information in request
-      role: req?.user?.role, // Assuming you have user information in request
-      ipAddress: req.ip,
-      method: req.method,
-      endpoint: req.originalUrl,
-      statusCode: res.statusCode,
-      responseTime,
-      userAgent: req.get("User-Agent"),
-      // Add other fields as necessary
-    });
+  if ((role?.name as string) === "OWNER") {
+    return next(err);
+  }
 
-    try {
-      await logEntry.save();
-    } catch (error) {
-      console.error("Error saving log:", error);
-    }
-  });
+  const log = {
+    action: "Error",
+    description: err.message,
+    user: req?.user?.userId,
+    role: role?.name,
+    ipAddress: req.ip,
+    method: req.method,
+    endpoint: req.originalUrl,
+    statusCode: res.statusCode,
+    stack: err.stack,
+    userAgent: req.get("User-Agent"),
+  };
 
-  next();
+  try {
+    await Logger.create(log);
+  } catch (error) {
+    console.error("Error saving error log:", error);
+  }
+
+  next(err);
 }

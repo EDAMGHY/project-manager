@@ -5,20 +5,20 @@ import {
   getProject,
   getProjects,
 } from "@/controllers";
-import { authenticate } from "@/middleware";
+import { authenticate, checkPermissions } from "@/middleware";
 import { Router } from "express";
 
 const router = Router();
 
 router
   .route("/")
-  .post(authenticate, createProject)
-  .get(authenticate, getProjects);
+  .post(authenticate, checkPermissions(), createProject)
+  .get(authenticate, checkPermissions(), getProjects);
 
-router.get("/:id", authenticate, getProject);
+router.get("/:id", authenticate, checkPermissions(), getProject);
 
-router.put("/:id", authenticate, editProject);
+router.put("/:id", authenticate, checkPermissions(), editProject);
 
-router.delete("/:id", authenticate, deleteProject);
+router.delete("/:id", authenticate, checkPermissions(), deleteProject);
 
 export default router;

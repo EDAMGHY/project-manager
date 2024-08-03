@@ -12,8 +12,10 @@ import colors from "colors";
 import { connectDB } from "@/config";
 import { env } from "@/config";
 import {
+  authenticate,
   errorHandlerMiddleware,
   getPermissions,
+  logErrors,
   notFoundMiddleware,
 } from "@/middleware";
 import { responseObject } from "@/lib";
@@ -24,6 +26,7 @@ import {
   projectRoutes,
   taskRoutes,
   authRoutes,
+  logsRoutes,
 } from "@/routes";
 
 const app: Application = express();
@@ -58,8 +61,10 @@ app.use("/api/v1/roles", roleRoutes);
 app.use("/api/v1/permissions", permissionRoutes);
 app.use("/api/v1/projects", projectRoutes);
 app.use("/api/v1/tasks", taskRoutes);
+app.use("/api/v1/logs", logsRoutes);
 
 app.use(notFoundMiddleware);
+app.use(authenticate, logErrors);
 app.use(errorHandlerMiddleware);
 
 const PORT = env.PORT || 5000;

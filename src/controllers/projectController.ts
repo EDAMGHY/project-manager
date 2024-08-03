@@ -1,12 +1,10 @@
-import { responseObject } from "@/lib";
+import { getPagination, responseObject, statsEnum } from "@/lib";
 import { Response } from "express";
 import * as CustomError from "@/errors";
-import { IFilterExpress, Request } from "@/types";
-import { Project } from "@/models";
+import { IFilterExpress, ISortExpress, Request } from "@/types";
+import { Project, Task } from "@/models";
 import { StatusCodes } from "http-status-codes";
 import { FilterQuery } from "mongoose";
-
-const stats = ["planning", "active", "completed"];
 
 /**
  *
@@ -55,7 +53,7 @@ export const createProject = async (req: Request, res: Response) => {
   }
 
   // check if status is valid
-  if (!stats.includes(status)) {
+  if (!statsEnum.includes(status)) {
     throw new CustomError.BadRequestError(
       "Status should be planning, active or completed",
     );
@@ -100,7 +98,10 @@ export const getProjects = async (req: Request, res: Response) => {
     "budget.gte": budgetGte,
     "progress.lte": progressLte,
     "progress.gte": progressGte,
-    sort,
+    sort = "createdAt",
+    order = "desc",
+    perPage = 100,
+    page = 1,
   } = req.query;
   // Filter setup
   const filters: IFilterExpress[] = [];
@@ -148,15 +149,25 @@ export const getProjects = async (req: Request, res: Response) => {
   }
 
   // Sorting setup
-  let sorting: string = "createdAt";
-  if (sort) sorting = sort.toString();
+  const key = sort.toString();
+  const value = order as "desc" | "asc";
+  const sorting: ISortExpress = { [key]: value };
 
-  const projects = await Project.find({ user: userId, ...obj }).sort(sorting);
+  const length = await Project.countDocuments(obj);
+
+  const { limit, skip, total } = getPagination(+page, +perPage, length);
+
+  const projects = await Project.find({ user: userId, ...obj })
+    .sort(sorting)
+    .skip(skip)
+    .limit(limit);
 
   res.status(StatusCodes.OK).json(
     responseObject("Projects Fetched Successfully", {
-      length: projects.length,
-      results: projects,
+      length,
+      total,
+      current: +page,
+      projects,
     }),
   );
 };
@@ -237,7 +248,7 @@ export const editProject = async (req: Request, res: Response) => {
   }
 
   // check if status is valid
-  if (status && !stats.includes(status)) {
+  if (status && !statsEnum.includes(status)) {
     throw new CustomError.BadRequestError(
       "Status should be planning, active or completed",
     );
@@ -250,7 +261,8 @@ export const editProject = async (req: Request, res: Response) => {
   if (endDate) project.endDate = end;
   if (budget) project.budget = budget;
   if (progress) project.progress = progress;
-  if (userId) project.user = userId;
+  //eslint-disable-next-line
+  if (userId) project.user = userId as string;
 
   await project.save();
 
@@ -279,6 +291,7 @@ export const deleteProject = async (req: Request, res: Response) => {
   }
 
   await project.deleteOne();
+  await Task.deleteMany({ project: id });
 
   res
     .status(StatusCodes.OK)
