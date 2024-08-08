@@ -6,7 +6,7 @@ The ProjectManager App is a role and permission-based application that allows us
 
 ### The App
 
-- [ ] Separate The DB logic from the controllers.
+- [ ] Refactor (Separate) The DB logic from the controllers.
 
 ### Role
 
@@ -14,7 +14,7 @@ The ProjectManager App is a role and permission-based application that allows us
 
 ### Logger
 
-- [ ] Add the Logger CRUD (Kinda)
+- [x] Add the Logger CRUD (Kinda)
 - [x] Add Logger for errors
 - [x] Add Logs for all errors except OWNER
 
@@ -25,4 +25,4 @@ The ProjectManager App is a role and permission-based application that allows us
 
 ### Permission
 
-- [ ] Add Permission User Management
+- [x] Add Permission User Management
